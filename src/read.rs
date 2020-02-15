@@ -723,6 +723,15 @@ impl<R: io::Read> ChunksReader<R> {
             .seek(&mut self.reader, io::SeekFrom::Start(wanted_byte as u64)));
         Ok(())
     }
+
+    pub fn current_time(&self) -> u32 {
+        let data = self.data_state.as_ref().expect("Not in the data chunk.");
+
+        let mut current_position = (data.chunk.len - data.chunk.remaining) as i64;
+        current_position /= data.spec_ex.spec.channels as i64;
+        current_position /= data.spec_ex.bytes_per_sample as i64;
+        current_position as u32
+    }
 }
 
 impl<R: io::Read> io::Read for ChunksReader<R> {
